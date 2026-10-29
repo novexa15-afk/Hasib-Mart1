@@ -134,7 +134,7 @@ $('orderForm').onsubmit=async e=>{
   e.preventDefault();
   if(!pendingOrder||!pendingOrder.items.length)return;
   if(ORDER_FUNCTION_URL.includes('YOUR_PROJECT_REF')){
-    $('orderStatus').textContent='Supabase Project Ref বসানো হয়নি। আগে কোডে ORDER_FUNCTION_URL ঠিক করুন।';
+    $('orderStatus').textContent='https://wdbwjkxsuddpohgaywic.supabase.co/rest/v1/';
     return;
   }
   const form=new FormData(e.target);
