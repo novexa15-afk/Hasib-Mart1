@@ -134,7 +134,7 @@ $('orderForm').onsubmit=async e=>{
   e.preventDefault();
   if(!pendingOrder||!pendingOrder.items.length)return;
   if(ORDER_FUNCTION_URL.includes('YOUR_PROJECT_REF')){
-    $('orderStatus').textContent='https://wdbwjkxsuddpohgaywic.supabase.co/rest/v1/';
+    $('orderStatus').textContent='https://wdbwjkxsuddpohgaywic.supabase.co/rest/v1/hyper-function-order';
     return;
   }
   const form=new FormData(e.target);
