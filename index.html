@@ -193,6 +193,15 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
 .hm-sender-field input{width:100%;min-height:48px;padding:12px 14px;border:1px solid #d8cbd3;border-radius:10px;background:#fffafb;color:#171717;font-size:16px}
 .hm-sender-field input::placeholder{color:#858585}
 
+
+.hm-fields label input{width:100%}
+.hm-item-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #315064}
+.hm-item-info{min-width:0;flex:1}.hm-item-info b{display:block;overflow-wrap:anywhere}
+.hm-item-controls{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.hm-item-controls button{width:30px;height:30px;border:1px solid #60798a;border-radius:8px;background:#102634;color:#fff;font-weight:900}
+.hm-item-controls strong{min-width:18px;text-align:center}
+.hm-add-more{margin-top:12px;width:100%;padding:11px;border:1px dashed #ffca28;border-radius:10px;background:#101f29;color:#ffca28;font-weight:800}
+
 </style></head>
 <body>
 <div class="top"><span>🚚 সারা বাংলাদেশে ডেলিভারি　 |　 🛡️ অরিজিনাল পণ্য　 |　 🎧 কাস্টমার সাপোর্ট</span><div class="toplinks"><a class="social facebook" aria-label="Facebook" title="Facebook" href="https://www.facebook.com/share/1FLBpRcgsX/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H7.3V13h2.8v8z" fill="currentColor"/></svg></a><a class="social whatsapp" aria-label="WhatsApp" title="WhatsApp" href="https://wa.me/8801304627162" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.7 11.7 0 0 0 2.1 17.6L.5 23.5l6-1.6A11.7 11.7 0 0 0 20.5 3.5ZM12 21a9.5 9.5 0 0 1-4.8-1.3l-.3-.2-3.5.9.9-3.4-.2-.4A9.4 9.4 0 1 1 12 21Zm5.2-7.1c-.3-.2-1.7-.9-2-.9s-.5-.2-.7.2-.8.9-1 1.1-.4.2-.7 0a7.8 7.8 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6-.7-1.7-1-2.3c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.2 3.2 1.4 3.4a11.8 11.8 0 0 0 4.5 3.9c.6.3 1.1.5 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4s-.2-.2-.5-.3Z" fill="currentColor"/></svg></a><a class="social tiktok" aria-label="TikTok" title="TikTok" href="https://www.tiktok.com/@novexa41?_r=1&_t=ZS-9Aw4vYBWWv9" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 7.2a6.7 6.7 0 0 1-4.1-1.4v8.1a6.1 6.1 0 1 1-5.3-6.1v3.2a2.9 2.9 0 1 0 2.1 2.8V2.5h3.2c.2 2.1 1.7 3.8 4.1 4.1z" fill="currentColor"/></svg></a><a class="social instagram" aria-label="Instagram" title="Instagram" href="https://www.instagram.com/haniya74652?dlrf=dWdraTQ0amZhNGEw" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="17.7" cy="6.5" r="1.3" fill="currentColor"/></svg></a></div></div>
@@ -280,6 +289,8 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
           <label>মোবাইল নম্বর *<input name="phone" required maxlength="40" autocomplete="tel" inputmode="tel" placeholder="01XXXXXXXXX"></label>
           <label class="wide">সম্পূর্ণ ঠিকানা *<textarea name="full_address" required maxlength="500" autocomplete="street-address" placeholder="বাড়ি নং, রোড, এলাকা, পোস্ট অফিস"></textarea></label>
           <label class="wide">জেলা *<input name="district" required maxlength="100" placeholder="জেলার নাম লিখুন"></label>
+          <label>সাইজ (প্রযোজ্য হলে)<input name="size" maxlength="40" placeholder="যেমন: M, L, XL"></label>
+          <label>কালার (প্রযোজ্য হলে)<input name="color" maxlength="50" placeholder="পছন্দের রং"></label>
         </div>
       </section>
       <section class="hm-card hm-total-card">
@@ -375,10 +386,14 @@ $('orderForm').onsubmit=async e=>{
     phone:String(form.get('phone')||'').trim(),
     full_address:String(form.get('full_address')||'').trim(),
     district:String(form.get('district')||'').trim(),
-    transaction_id:String(form.get('transaction_id')||'').trim()
+    transaction_id:String(form.get('transaction_id')||'').trim(),
+    sender_number:String(form.get('sender_number')||'').trim(),
+    size:String(form.get('size')||'').trim(),
+    color:String(form.get('color')||'').trim()
   };
   // Function currently accepts one product per order; cart items are grouped into one readable product description.
-  const productName=pendingOrder.items.map(i=>`${i.name} × ${i.qty}`).join(', ');
+  const variantInfo=[customer.size?`সাইজ: ${customer.size}`:'',customer.color?`কালার: ${customer.color}`:''].filter(Boolean).join(', ');
+  const productName=pendingOrder.items.map(i=>`${i.name} × ${i.qty}`).join(', ')+(variantInfo?' | '+variantInfo:'');
   const total=pendingOrder.total;
   const payload={
     ...customer,
@@ -423,10 +438,38 @@ $('orderForm').onsubmit=async e=>{
 let selectedPayment='Cash on Delivery';
 let selectedDeliveryArea='inside';
 function getDeliveryCharge(){return selectedDeliveryArea==='inside'?80:120}
+function recalcPendingTotal(){
+ if(!pendingOrder)return;
+ pendingOrder.total=pendingOrder.items.reduce((sum,item)=>sum+item.price*item.qty,0);
+}
+function changePendingQty(index,delta){
+ if(!pendingOrder||!pendingOrder.items[index])return;
+ pendingOrder.items[index].qty+=delta;
+ if(pendingOrder.items[index].qty<1)pendingOrder.items.splice(index,1);
+ if(!pendingOrder.items.length){closeOrderModal();pendingOrder=null;toast('অর্ডার তালিকা খালি হয়েছে');return;}
+ recalcPendingTotal();
+ updateOrderSummary();
+}
+function addMoreProducts(){
+ if(pendingOrder?.items){
+  pendingOrder.items.forEach(item=>{
+   const existing=cartData.find(c=>c.name+' ('+c.bn+')'===item.name);
+   if(existing)existing.qty+=item.qty;
+   else{
+    const product=products.find(p=>p.name+' ('+p.bn+')'===item.name);
+    if(product)cartData.push({...product,qty:item.qty});
+   }
+  });
+  save();
+ }
+ closeOrderModal();
+ openCart();
+ toast('কার্ট থেকে আরও পণ্য যোগ করে Checkout করুন');
+}
 function updateOrderSummary(){
  const subtotal=pendingOrder?.total||0;
  const charge=getDeliveryCharge();
- $('orderSummary').innerHTML=(pendingOrder?.items||[]).map(i=>`<div class="hm-item-row"><span>${i.name} × ${i.qty}</span><b>${money(i.price*i.qty)}</b></div>`).join('')||'পণ্য নির্বাচন করুন';
+ $('orderSummary').innerHTML=(pendingOrder?.items||[]).map((i,index)=>`<div class="hm-item-row"><div class="hm-item-info"><b>${i.name}</b><small>${money(i.price)} × ${i.qty} = ${money(i.price*i.qty)}</small></div><div class="hm-item-controls"><button type="button" onclick="changePendingQty(${index},-1)" aria-label="একটি কমান">−</button><strong>${i.qty}</strong><button type="button" onclick="changePendingQty(${index},1)" aria-label="একটি বাড়ান">+</button></div></div>`).join('')+`<button class="hm-add-more" type="button" onclick="addMoreProducts()">＋ আরও পণ্য যোগ করুন (কার্ট খুলুন)</button>`;
  $('hmTotalLines').innerHTML=`<div><span>পণ্যের মোট দাম</span><b>${money(subtotal)}</b></div><div><span>ডেলিভারি চার্জ (${charge===80?'ঢাকার ভিতরে':'ঢাকার বাইরে'})</span><b>${money(charge)}</b></div><div class="hm-grand-total"><span>সর্বমোট</span><b>${money(subtotal+charge)}</b></div>`;
  document.querySelectorAll('.hm-delivery-option').forEach(label=>label.classList.toggle('active',label.querySelector('input').value===selectedDeliveryArea));
 }
@@ -469,7 +512,7 @@ $('whatsappOrder').onclick=()=>{
  if(!name||!phone||!address){$('orderStatus').textContent='WhatsApp অর্ডারের জন্য নাম, মোবাইল ও সম্পূর্ণ ঠিকানা লিখুন।';return}
  const charge=getDeliveryCharge(), total=pendingOrder.total+charge;
  const items=pendingOrder.items.map(i=>`${i.name} × ${i.qty} = ${money(i.price*i.qty)}`).join('\n');
- const msg=`HASIB MART BD অর্ডার\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\nজেলা: ${district||'উল্লেখ নেই'}\nপণ্য:\n${items}\nপণ্যমূল্য: ${money(pendingOrder.total)}\nডেলিভারি চার্জ: ${money(charge)}\nসর্বমোট: ${money(total)}\nপেমেন্ট: ${selectedPayment}\nTrxID: ${String(f.get('transaction_id')||'প্রযোজ্য নয়')}\nযে নম্বর থেকে পাঠিয়েছেন: ${String(f.get('sender_number')||'দেওয়া হয়নি')}\nডেলিভারি: ${selectedDeliveryArea==='inside'?'ঢাকার ভিতরে':'ঢাকার বাইরে'}`;
+ const msg=`HASIB MART BD অর্ডার\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\nজেলা: ${district||'উল্লেখ নেই'}\nপণ্য:\n${items}\nপণ্যমূল্য: ${money(pendingOrder.total)}\nডেলিভারি চার্জ: ${money(charge)}\nসর্বমোট: ${money(total)}\nপেমেন্ট: ${selectedPayment}\nTrxID: ${String(f.get('transaction_id')||'প্রযোজ্য নয়')}\nযে নম্বর থেকে পাঠিয়েছেন: ${String(f.get('sender_number')||'দেওয়া হয়নি')}\nসাইজ: ${String(f.get('size')||'প্রযোজ্য নয়')}\nকালার: ${String(f.get('color')||'প্রযোজ্য নয়')}\nযে নম্বর থেকে পাঠিয়েছেন: ${String(f.get('sender_number')||'দেওয়া হয়নি')}\nডেলিভারি: ${selectedDeliveryArea==='inside'?'ঢাকার ভিতরে':'ঢাকার বাইরে'}`;
  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
 };
 
