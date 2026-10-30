@@ -187,6 +187,12 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
 .hm-trx-inside input{width:100%;min-height:48px;padding:12px 14px;border:1px solid #d8cbd3;border-radius:10px;background:#fffafb;color:#171717;font-size:16px}
 .hm-trx-inside input::placeholder{color:#858585}
 
+
+.hm-sender-field{display:grid;gap:8px;margin-top:10px;padding:12px;background:#fff;border:1px solid #ead9a2;border-radius:12px;color:#171717;font-weight:800}
+.hm-sender-field[hidden]{display:none!important}
+.hm-sender-field input{width:100%;min-height:48px;padding:12px 14px;border:1px solid #d8cbd3;border-radius:10px;background:#fffafb;color:#171717;font-size:16px}
+.hm-sender-field input::placeholder{color:#858585}
+
 </style></head>
 <body>
 <div class="top"><span>🚚 সারা বাংলাদেশে ডেলিভারি　 |　 🛡️ অরিজিনাল পণ্য　 |　 🎧 কাস্টমার সাপোর্ট</span><div class="toplinks"><a class="social facebook" aria-label="Facebook" title="Facebook" href="https://www.facebook.com/share/1FLBpRcgsX/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 21v-8h2.7l.4-3.1h-3.1v-2c0-.9.3-1.5 1.6-1.5h1.7V3.6c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.1H7.3V13h2.8v8z" fill="currentColor"/></svg></a><a class="social whatsapp" aria-label="WhatsApp" title="WhatsApp" href="https://wa.me/8801304627162" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 3.5A11.7 11.7 0 0 0 2.1 17.6L.5 23.5l6-1.6A11.7 11.7 0 0 0 20.5 3.5ZM12 21a9.5 9.5 0 0 1-4.8-1.3l-.3-.2-3.5.9.9-3.4-.2-.4A9.4 9.4 0 1 1 12 21Zm5.2-7.1c-.3-.2-1.7-.9-2-.9s-.5-.2-.7.2-.8.9-1 1.1-.4.2-.7 0a7.8 7.8 0 0 1-2.3-1.4 8.5 8.5 0 0 1-1.6-2c-.2-.3 0-.5.1-.6l.5-.6c.2-.2.2-.4.3-.6s0-.4 0-.6-.7-1.7-1-2.3c-.2-.5-.5-.4-.7-.4h-.6c-.2 0-.6.1-.9.4s-1.2 1.2-1.2 2.8 1.2 3.2 1.4 3.4a11.8 11.8 0 0 0 4.5 3.9c.6.3 1.1.5 1.5.6.6.2 1.2.2 1.6.1.5-.1 1.7-.7 1.9-1.4.2-.7.2-1.3.1-1.4s-.2-.2-.5-.3Z" fill="currentColor"/></svg></a><a class="social tiktok" aria-label="TikTok" title="TikTok" href="https://www.tiktok.com/@novexa41?_r=1&_t=ZS-9Aw4vYBWWv9" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.6 7.2a6.7 6.7 0 0 1-4.1-1.4v8.1a6.1 6.1 0 1 1-5.3-6.1v3.2a2.9 2.9 0 1 0 2.1 2.8V2.5h3.2c.2 2.1 1.7 3.8 4.1 4.1z" fill="currentColor"/></svg></a><a class="social instagram" aria-label="Instagram" title="Instagram" href="https://www.instagram.com/haniya74652?dlrf=dWdraTQ0amZhNGEw" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="17.7" cy="6.5" r="1.3" fill="currentColor"/></svg></a></div></div>
@@ -260,6 +266,7 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
           </ol>
           <p class="hm-payment-warning">গুরুত্বপূর্ণ: TrxID দিলে আপনার অর্ডার দ্রুত কনফার্ম করা যাবে।</p>
           <label class="hm-trx-field hm-trx-inside" id="trxField" hidden>TrxID (Transaction ID) *<input form="orderForm" name="transaction_id" maxlength="100" placeholder="এখানে TrxID লিখুন (যেমন: 9A7B3C2D1E)"></label>
+          <label class="hm-sender-field" id="senderNumberField" hidden>যে নম্বর থেকে পাঠিয়েছেন (ঐচ্ছিক)<input form="orderForm" name="sender_number" type="tel" inputmode="tel" maxlength="30" placeholder="যেমন: 01XXXXXXXXX"></label>
         </div>
         <p class="hm-card-note" id="cardNote" style="display:none">Card পেমেন্টের জন্য WhatsApp-এ যোগাযোগ করুন। এই ফর্মে কার্ডের তথ্য দেবেন না।</p>
       </section>
@@ -380,6 +387,7 @@ $('orderForm').onsubmit=async e=>{
     product_price:total+getDeliveryCharge(),
     payment_method:selectedPayment,
     transaction_id:customer.transaction_id,
+    sender_number:customer.sender_number,
     district:customer.district,
     delivery_charge:getDeliveryCharge(),
     delivery_area:selectedDeliveryArea
@@ -426,6 +434,7 @@ function updatePaymentFields(){
  const mobile=selectedPayment==='bKash'||selectedPayment==='Nagad';
  $('mobilePaymentBox').classList.toggle('active',mobile);
  $('trxField').hidden=!mobile;
+ $('senderNumberField').hidden=!mobile;
  $('orderForm').elements.transaction_id.required=mobile;
  $('cardNote').style.display=selectedPayment==='Card'?'block':'none';
  const brand=selectedPayment==='Nagad'?'Nagad':'bKash';
@@ -460,7 +469,7 @@ $('whatsappOrder').onclick=()=>{
  if(!name||!phone||!address){$('orderStatus').textContent='WhatsApp অর্ডারের জন্য নাম, মোবাইল ও সম্পূর্ণ ঠিকানা লিখুন।';return}
  const charge=getDeliveryCharge(), total=pendingOrder.total+charge;
  const items=pendingOrder.items.map(i=>`${i.name} × ${i.qty} = ${money(i.price*i.qty)}`).join('\n');
- const msg=`HASIB MART BD অর্ডার\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\nজেলা: ${district||'উল্লেখ নেই'}\nপণ্য:\n${items}\nপণ্যমূল্য: ${money(pendingOrder.total)}\nডেলিভারি চার্জ: ${money(charge)}\nসর্বমোট: ${money(total)}\nপেমেন্ট: ${selectedPayment}\nTrxID: ${String(f.get('transaction_id')||'প্রযোজ্য নয়')}\nডেলিভারি: ${selectedDeliveryArea==='inside'?'ঢাকার ভিতরে':'ঢাকার বাইরে'}`;
+ const msg=`HASIB MART BD অর্ডার\nনাম: ${name}\nমোবাইল: ${phone}\nঠিকানা: ${address}\nজেলা: ${district||'উল্লেখ নেই'}\nপণ্য:\n${items}\nপণ্যমূল্য: ${money(pendingOrder.total)}\nডেলিভারি চার্জ: ${money(charge)}\nসর্বমোট: ${money(total)}\nপেমেন্ট: ${selectedPayment}\nTrxID: ${String(f.get('transaction_id')||'প্রযোজ্য নয়')}\nযে নম্বর থেকে পাঠিয়েছেন: ${String(f.get('sender_number')||'দেওয়া হয়নি')}\nডেলিভারি: ${selectedDeliveryArea==='inside'?'ঢাকার ভিতরে':'ঢাকার বাইরে'}`;
  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
 };
 
