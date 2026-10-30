@@ -273,7 +273,7 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
             <li>পেমেন্ট শেষে TrxID কপি করুন।</li>
             <li>নিচের ঘরে TrxID দিয়ে অর্ডার কনফার্ম করুন।</li>
           </ol>
-          <p class="hm-payment-warning">গুরুত্বপূর্ণ: TrxID দিলে আপনার অর্ডার দ্রুত কনফার্ম করা যাবে।</p>
+          
           <label class="hm-trx-field hm-trx-inside" id="trxField" hidden>TrxID (Transaction ID) *<input form="orderForm" name="transaction_id" maxlength="100" placeholder="এখানে TrxID লিখুন (যেমন: 9A7B3C2D1E)"></label>
           <label class="hm-sender-field" id="senderNumberField" hidden>যে নম্বর থেকে পাঠিয়েছেন (ঐচ্ছিক)<input form="orderForm" name="sender_number" type="tel" inputmode="tel" maxlength="30" placeholder="যেমন: 01XXXXXXXXX"></label>
         </div>
@@ -289,8 +289,8 @@ section.content{padding:25px 0}.section-title{display:flex;justify-content:space
           <label>মোবাইল নম্বর *<input name="phone" required maxlength="40" autocomplete="tel" inputmode="tel" placeholder="01XXXXXXXXX"></label>
           <label class="wide">সম্পূর্ণ ঠিকানা *<textarea name="full_address" required maxlength="500" autocomplete="street-address" placeholder="বাড়ি নং, রোড, এলাকা, পোস্ট অফিস"></textarea></label>
           <label class="wide">জেলা *<input name="district" required maxlength="100" placeholder="জেলার নাম লিখুন"></label>
-          <label>সাইজ (প্রযোজ্য হলে)<input name="size" maxlength="40" placeholder="যেমন: M, L, XL"></label>
-          <label>কালার (প্রযোজ্য হলে)<input name="color" maxlength="50" placeholder="পছন্দের রং"></label>
+          <label>সাইজ<input name="size" maxlength="40" placeholder="যেমন: M, L, XL"></label>
+          <label>কালার<input name="color" maxlength="50" placeholder="পছন্দের রং"></label>
         </div>
       </section>
       <section class="hm-card hm-total-card">
@@ -469,7 +469,7 @@ function addMoreProducts(){
 function updateOrderSummary(){
  const subtotal=pendingOrder?.total||0;
  const charge=getDeliveryCharge();
- $('orderSummary').innerHTML=(pendingOrder?.items||[]).map((i,index)=>`<div class="hm-item-row"><div class="hm-item-info"><b>${i.name}</b><small>${money(i.price)} × ${i.qty} = ${money(i.price*i.qty)}</small></div><div class="hm-item-controls"><button type="button" onclick="changePendingQty(${index},-1)" aria-label="একটি কমান">−</button><strong>${i.qty}</strong><button type="button" onclick="changePendingQty(${index},1)" aria-label="একটি বাড়ান">+</button></div></div>`).join('')+`<button class="hm-add-more" type="button" onclick="addMoreProducts()">＋ আরও পণ্য যোগ করুন (কার্ট খুলুন)</button>`;
+ $('orderSummary').innerHTML=(pendingOrder?.items||[]).map((i,index)=>`<div class="hm-item-row"><div class="hm-item-info"><b>${i.name}</b><small>${money(i.price)} × ${i.qty} = ${money(i.price*i.qty)}</small></div><div class="hm-item-controls"><button type="button" onclick="changePendingQty(${index},-1)" aria-label="একটি কমান">−</button><strong>${i.qty}</strong><button type="button" onclick="changePendingQty(${index},1)" aria-label="একটি বাড়ান">+</button></div></div>`).join('');
  $('hmTotalLines').innerHTML=`<div><span>পণ্যের মোট দাম</span><b>${money(subtotal)}</b></div><div><span>ডেলিভারি চার্জ (${charge===80?'ঢাকার ভিতরে':'ঢাকার বাইরে'})</span><b>${money(charge)}</b></div><div class="hm-grand-total"><span>সর্বমোট</span><b>${money(subtotal+charge)}</b></div>`;
  document.querySelectorAll('.hm-delivery-option').forEach(label=>label.classList.toggle('active',label.querySelector('input').value===selectedDeliveryArea));
 }
