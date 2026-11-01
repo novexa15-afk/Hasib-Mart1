@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HASIB MART | Admin Panel</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#111c2d;--line:#26364b;--muted:#91a3b8;--text:#eef5fb;--accent:#22c58b;--blue:#4da3ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#0b1220,#101b2b);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:11px 16px;font-weight:700;background:var(--accent);color:#06251a}button.secondary{background:#26364b;color:var(--text)}button:disabled{opacity:.55;cursor:not-allowed}
+.wrap{max-width:1200px;margin:auto;padding:24px}.top{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:24px}.brand{font-size:22px;font-weight:850;letter-spacing:.4px}.brand span{color:var(--accent)}.muted{color:var(--muted)}.panel{background:rgba(17,28,45,.96);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 16px 50px #0003}
+.login{max-width:420px;margin:9vh auto}.login h1{margin:0 0 6px}.field{display:grid;gap:7px;margin:15px 0}.field label{font-size:13px;color:#b8c8d8}.field input,.toolbar input,.toolbar select{width:100%;background:#0b1524;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;outline:none}.field input:focus,.toolbar input:focus,.toolbar select:focus{border-color:var(--accent)}
+#loginMsg,#appMsg{min-height:22px;color:#ffbd69;font-size:13px;margin-top:10px}.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.stat{background:#0c1727;border:1px solid var(--line);border-radius:14px;padding:16px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:25px;margin-top:5px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}.toolbar input{flex:1;min-width:200px}.toolbar select{width:auto;min-width:155px}
+.tablebox{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:900px}th,td{text-align:left;padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:13px}th{color:#9fb3c9;background:#0c1727;font-weight:700}td b{font-size:14px}.sub{display:block;color:var(--muted);margin-top:4px;line-height:1.5}.status{padding:6px 9px;border-radius:30px;background:#24384c;color:#c9e4ff;font-size:12px}.status-select{background:#0b1524;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px;max-width:145px}.empty{text-align:center;color:var(--muted);padding:34px}
+@media(max-width:700px){.wrap{padding:14px}.top{align-items:flex-start}.stats{grid-template-columns:repeat(2,1fr)}.panel{padding:16px}.brand{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <header class="top"><div class="brand">HASIB <span>MART</span> <small class="muted">/ Admin</small></div><button id="logoutBtn" class="secondary hidden">লগআউট</button></header>
+ <section id="loginPanel" class="panel login">
+  <h1>Admin Login</h1><p class="muted">শুধু অনুমোদিত অ্যাডমিন অ্যাকাউন্ট দিয়ে প্রবেশ করুন।</p>
+  <form id="loginForm">
+   <div class="field"><label for="email">ইমেইল</label><input id="email" type="email" autocomplete="username" required value="novexa15@gmail.com"></div>
+   <div class="field"><label for="password">পাসওয়ার্ড</label><input id="password" type="password" autocomplete="current-password" required></div>
+   <button id="loginBtn" type="submit" style="width:100%">লগইন করুন</button><div id="loginMsg" role="status"></div>
+  </form>
+ </section>
+ <main id="dashboard" class="hidden">
+  <div class="top"><div><h1 style="margin:0">অর্ডার ম্যানেজমেন্ট</h1><div class="muted" id="signedInAs"></div></div><button id="refreshBtn" class="secondary">↻ রিফ্রেশ</button></div>
+  <div class="stats">
+   <div class="stat"><small>মোট অর্ডার</small><strong id="totalCount">0</strong></div>
+   <div class="stat"><small>Pending</small><strong id="pendingCount">0</strong></div>
+   <div class="stat"><small>Confirmed</small><strong id="confirmedCount">0</strong></div>
+   <div class="stat"><small>Delivered</small><strong id="deliveredCount">0</strong></div>
+  </div>
+  <section class="panel">
+   <div class="toolbar"><input id="searchBox" placeholder="অর্ডার নম্বর, নাম বা ফোন দিয়ে খুঁজুন"><select id="statusFilter"><option value="">সব স্ট্যাটাস</option><option>pending</option><option>confirmed</option><option>shipped</option><option>delivered</option><option>cancelled</option></select></div>
+   <div id="appMsg" role="status"></div>
+   <div class="tablebox"><table><thead><tr><th>অর্ডার</th><th>কাস্টমার</th><th>পণ্য</th><th>পরিমাণ / মোট</th><th>পেমেন্ট</th><th>স্ট্যাটাস</th><th>তারিখ</th></tr></thead><tbody id="ordersBody"><tr><td colspan="7" class="empty">অর্ডার লোড হচ্ছে...</td></tr></tbody></table></div>
+  </section>
+ </main>
+</div>
+<script>
+const SUPABASE_URL = 'https://wdbwjkxsuddpohgaywic.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_ZF5a5IMnbww6rlwbbd_orw_wnHpVSzA';
+const ADMIN_UID = '84a16e4e-e597-4b52-993b-407aa17df020';
+const {createClient} = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const $ = id => document.getElementById(id);
+let orders = [];
+const statusLabels = {pending:'Pending',confirmed:'Confirmed',shipped:'Shipped',delivered:'Delivered',cancelled:'Cancelled'};
+function money(v){return '৳'+Number(v||0).toLocaleString('en-BD')}
+function safe(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function dateText(v){if(!v)return '—';const d=new Date(v);return isNaN(d)?'—':d.toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'})}
+function showLogin(message=''){ $('loginPanel').classList.remove('hidden');$('dashboard').classList.add('hidden');$('logoutBtn').classList.add('hidden');$('loginMsg').textContent=message; }
+async function checkAdmin(session){
+ if(!session?.user){showLogin();return false}
+ if(session.user.id!==ADMIN_UID){await db.auth.signOut();showLogin('এই অ্যাকাউন্টের Admin অনুমতি নেই।');return false}
+ $('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');$('signedInAs').textContent=session.user.email||'Admin';return true;
+}
+async function loadOrders(){
+ $('appMsg').textContent='অর্ডার লোড হচ্ছে...';$('refreshBtn').disabled=true;
+ const {data,error}=await db.from('orders').select('*').order('created_at',{ascending:false}).limit(300);
+ $('refreshBtn').disabled=false;
+ if(error){$('appMsg').textContent='অর্ডার লোড হয়নি: '+error.message;return}
+ orders=data||[];renderOrders();$('appMsg').textContent=orders.length?'সর্বশেষ ৩০০টি অর্ডার দেখানো হচ্ছে।':'এখনো কোনো অর্ডার পাওয়া যায়নি।';
+}
+function renderOrders(){
+ $('totalCount').textContent=orders.length;
+ $('pendingCount').textContent=orders.filter(o=>o.order_status==='pending').length;
+ $('confirmedCount').textContent=orders.filter(o=>o.order_status==='confirmed').length;
+ $('deliveredCount').textContent=orders.filter(o=>o.order_status==='delivered').length;
+ const q=$('searchBox').value.trim().toLowerCase(), st=$('statusFilter').value;
+ const list=orders.filter(o=>(!st||o.order_status===st)&&(!q||[o.order_number,o.customer_name,o.phone].some(v=>String(v||'').toLowerCase().includes(q))));
+ $('ordersBody').innerHTML=list.length?list.map(o=>'<tr><td><b>'+safe(o.order_number)+'</b><span class="sub">#'+safe(o.id)+'</span></td><td><b>'+safe(o.customer_name)+'</b><span class="sub">'+safe(o.phone)+'<br>'+safe(o.full_address)+'<br>'+safe(o.district||'')+'</span></td><td><b>'+safe(o.product_name)+'</b><span class="sub">Size: '+safe(o.size||'—')+' · Color: '+safe(o.color||'—')+'</span></td><td>'+safe(o.quantity)+' টি<span class="sub">'+money(o.total_amount)+'</span></td><td>'+safe(o.payment_method)+'<span class="sub">TrxID: '+safe(o.transaction_id||'—')+'</span></td><td><select class="status-select" data-id="'+safe(o.id)+'" aria-label="অর্ডার স্ট্যাটাস">'+Object.keys(statusLabels).map(s=>'<option value="'+s+'" '+(o.order_status===s?'selected':'')+'>'+statusLabels[s]+'</option>').join('')+'</select></td><td>'+safe(dateText(o.created_at))+'</td></tr>').join(''):'<tr><td colspan="7" class="empty">কোনো অর্ডার পাওয়া যায়নি।</td></tr>';
+ document.querySelectorAll('.status-select').forEach(el=>el.addEventListener('change',()=>updateStatus(el.dataset.id,el.value,el)));
+}
+async function updateStatus(id,status,el){
+ const previous=orders.find(o=>String(o.id)===String(id))?.order_status;
+ el.disabled=true;$('appMsg').textContent='স্ট্যাটাস আপডেট হচ্ছে...';
+ const {error}=await db.from('orders').update({order_status:status}).eq('id',id);
+ el.disabled=false;
+ if(error){el.value=previous||'pending';$('appMsg').textContent='আপডেট হয়নি: '+error.message;return}
+ const item=orders.find(o=>String(o.id)===String(id));if(item)item.order_status=status;
+ renderOrders();$('appMsg').textContent='অর্ডারের স্ট্যাটাস আপডেট হয়েছে।';
+}
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginBtn').disabled=true;$('loginMsg').textContent='লগইন হচ্ছে...';
+ const {data,error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});
+ $('loginBtn').disabled=false;
+ if(error){$('loginMsg').textContent='লগইন হয়নি: '+error.message;return}
+ if(await checkAdmin(data.session))await loadOrders();
+});
+$('logoutBtn').addEventListener('click',async()=>{await db.auth.signOut();showLogin('আপনি লগআউট করেছেন।')});
+$('refreshBtn').addEventListener('click',loadOrders);
+$('searchBox').addEventListener('input',renderOrders);$('statusFilter').addEventListener('change',renderOrders);
+(async()=>{const {data}=await db.auth.getSession();if(await checkAdmin(data.session))await loadOrders()})();
+db.auth.onAuthStateChange(async(_event,session)=>{if(!session)showLogin()});
+</script>
+</body>
+</html>
