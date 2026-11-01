@@ -2,7 +2,8 @@
 <html lang="bn">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#070d12"><title>HASIB MART — Online Shopping</title>
+<meta name="theme-color" content="#070d12">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><title>HASIB MART — Online Shopping</title>
 <style>
 :root{--bg:#070d12;--panel:#111a21;--panel2:#18232c;--gold:#ffca28;--text:#f7f7f4;--muted:#bac1c7;--line:#3a4248;--green:#20c76a}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans Bengali",sans-serif}a{color:inherit;text-decoration:none}button,input,textarea,select{font:inherit}button{cursor:pointer}.container{width:min(1400px,94%);margin:auto}
@@ -314,17 +315,19 @@ const WA='8801304627162';
 // IMPORTANT: Replace YOUR_PROJECT_REF with the Project Ref from Supabase Project URL.
 const ORDER_FUNCTION_URL='https://wdbwjkxsuddpohgaywic.supabase.co/functions/v1/hyper-function-order';
 let pendingOrder=null;
-const products=[
-{id:1,name:'Laptop Backpack',bn:'ল্যাপটপ ব্যাকপ্যাক',cat:'ব্যাগ',price:1490,old:1990,off:25,rate:'4.8',img:'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=700&q=80'},
-{id:2,name:'Sports Sneakers',bn:'স্পোর্টস জুতা',cat:'জুতা',price:2490,old:3290,off:24,rate:'4.8',img:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=700&q=80'},
-{id:3,name:'Smart Watch',bn:'স্মার্ট ওয়াচ',cat:'গ্যাজেট',price:1890,old:2490,off:24,rate:'4.7',img:'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=700&q=80'},
-{id:4,name:'Fashion Dress',bn:'ফ্যাশন ড্রেস',cat:'পোশাক',price:1690,old:1990,off:15,rate:'4.8',img:'https://images.unsplash.com/photo-1595777457583-95e059d581b8?auto=format&fit=crop&w=700&q=80'},
-{id:5,name:'Wireless Earbuds',bn:'ওয়্যারলেস ইয়ারবাডস',cat:'গ্যাজেট',price:1290,old:1990,off:35,rate:'4.9',img:'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=700&q=80'},
-{id:6,name:'Casual Shirt',bn:'ক্যাজুয়াল শার্ট',cat:'পোশাক',price:990,old:1290,off:23,rate:'4.8',img:'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=700&q=80'},
-{id:7,name:'Beauty Care',bn:'বিউটি কেয়ার',cat:'বিউটি',price:890,old:1190,off:25,rate:'4.7',img:'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=700&q=80'},
-{id:8,name:'Kitchen Essentials',bn:'কিচেন সামগ্রী',cat:'হোম ও কিচেন',price:1590,old:1890,off:16,rate:'4.8',img:'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=700&q=80'},
-{id:9,name:'Teddy Bear',bn:'টেডি বিয়ার',cat:'খেলনা',price:690,old:890,off:22,rate:'4.8',img:'https://images.unsplash.com/photo-1559454403-b8fb88521f11?auto=format&fit=crop&w=700&q=80'},
-{id:10,name:'Classic Watch',bn:'ক্লাসিক ঘড়ি',cat:'অ্যাক্সেসরিজ',price:1890,old:2490,off:24,rate:'4.8',img:'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&w=700&q=80'}];
+const SUPABASE_URL='https://wdbwjkxsuddpohgaywic.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_ZF5a5IMnbww6rlwbbd_orw_wnHpVSzA';
+const db=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+let products=[];
+async function loadProducts(){
+ const grid=$('productGrid');grid.innerHTML='<p>পণ্য লোড হচ্ছে...</p>';
+ const {data,error}=await db.from('products').select('*').order('created_at',{ascending:false});
+ if(error){grid.innerHTML='<p>পণ্য লোড করা যায়নি। অনুগ্রহ করে কিছুক্ষণ পর আবার চেষ্টা করুন।</p>';console.error(error);return}
+ products=(data||[]).map(p=>({id:p.id,name:p.name,bn:p.bn||'',cat:p.category||'অন্যান্য',price:Number(p.price)||0,old:Number(p.old_price)||Number(p.price)||0,off:Number(p.old_price)>Number(p.price)?Math.round((1-Number(p.price)/Number(p.old_price))*100):0,rate:'5.0',img:p.image_url||''}));
+ if(localStorage.getItem('hmProductsVersion')!=='2'){cartData=[];localStorage.removeItem('hmCart');localStorage.setItem('hmProductsVersion','2');}
+ renderProducts();save();
+}
+
 let cartData=JSON.parse(localStorage.getItem('hmCart')||'[]'),catNow='সব',query='',rating=5;
 const $=id=>document.getElementById(id),money=n=>'৳'+Number(n).toLocaleString('en-US');
 function renderProducts(){let list=products.filter(p=>(catNow==='সব'||p.cat===catNow)&&(`${p.name} ${p.bn} ${p.cat}`).toLowerCase().includes(query.toLowerCase()));$('productGrid').innerHTML=list.length?list.map(p=>`<article class="product"><span class="discount">${p.off}% ছাড়</span><div class="photo"><img src="${p.img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.parentElement.innerHTML='<span style=&quot;font-size:55px&quot;>🛍️</span>'"></div><div class="pinfo"><h3>${p.name}</h3><div class="stars">★★★★★ <small>(${p.rate})</small></div><div class="price">${money(p.price)} <span class="old">${money(p.old)}</span></div><div class="actions"><button class="order-now" onclick="orderNow(${p.id})">🔒 Order Now</button><button class="add" onclick="add(${p.id})">🛒 Add to Cart</button></div></div></article>`).join(''):'<p>এই ক্যাটাগরিতে পণ্য পাওয়া যায়নি।</p>'}
@@ -516,5 +519,5 @@ $('whatsappOrder').onclick=()=>{
  window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
 };
 
-$('year').textContent=new Date().getFullYear();renderProducts();save();
+$('year').textContent=new Date().getFullYear();loadProducts();
 </script></body></html>
